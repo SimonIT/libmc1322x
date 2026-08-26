@@ -171,4 +171,6 @@ extern void asm_isr(void) __attribute__((weak));
 
 extern void i2c_isr(void) __attribute__((weak));
 
+extern void spi_isr(void) __attribute__((weak));
+
 #endif
