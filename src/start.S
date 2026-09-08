@@ -1,8 +1,8 @@
 /*
  *  armboot - Startup Code for ARM720 CPU-core
  *
- *  Copyright (c) 2001	Marius Gröger <mag@sysgo.de>
- *  Copyright (c) 2002	Alex Züpke <azu@sysgo.de>
+ *  Copyright (c) 2001	Marius Grï¿½ger <mag@sysgo.de>
+ *  Copyright (c) 2002	Alex Zï¿½pke <azu@sysgo.de>
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -201,27 +201,41 @@ _system_stack:
 	
 /*
  * exception handlers
+ *
+ * These were previously empty labels with no code at all, silently falling through one into
+ * the next and off the end of this file into whatever the linker happened to place next -
+ * meaning any real undefined-instruction/SWI/prefetch-abort/data-abort/FIQ exception during
+ * execution (from any application built on this library, not just this file) would cause
+ * silent, untraceable divergence into unrelated code instead of a diagnosable halt. Real IRQs
+ * are unaffected (`_irq` already points at `isr.c`'s proper `irq()` dispatcher) - only these
+ * five vectors lacked a real handler. Each now parks the core in a stable, recognizable
+ * infinite loop at its own fixed address instead.
  */
 	.align  5
 undefined_instruction:
+	b	undefined_instruction
 
 	.align	5
 software_interrupt:
+	b	software_interrupt
 
 	.align	5
 prefetch_abort:
-	nop
+	b	prefetch_abort
+
 	.align	5
 data_abort:
+	b	data_abort
 
 	.align	5
 not_used:
-
+	b	not_used
 
 	.align	5
 //irq:
 //
 //	.align	5
 fiq:
+	b	fiq
 
 	.align	5
